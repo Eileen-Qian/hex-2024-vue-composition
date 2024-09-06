@@ -74,6 +74,22 @@ const changeStockNum = (item, adjustment) => {
     item.stock--
   }
 }
+
+const startEditing = (item) => {
+  item.isEdit = true
+  item.newName = item.name
+}
+
+const confirmEdit = (item) => {
+  item.isEdit = false
+  item.name = item.newName
+}
+
+const handleKeyup = (event, item) => {
+  if (event.key == 'Enter') {
+    confirmEdit(item)
+  }
+}
 </script>
 
 <template>
@@ -90,7 +106,19 @@ const changeStockNum = (item, adjustment) => {
       </thead>
       <tbody v-for="item in products" :key="item.id">
         <tr>
-          <td>{{ item.name }}</td>
+          <td>
+            <template v-if="item.isEdit">
+              <input
+                v-model="item.newName"
+                @keyup="(event) => handleKeyup(event, item)"
+                class="editable-name"
+                autofocus
+              />
+            </template>
+            <template v-else>
+              <span @click="startEditing(item)">{{ item.name }}</span>
+            </template>
+          </td>
           <td>
             <small>{{ item.description }}</small>
           </td>
@@ -103,11 +131,14 @@ const changeStockNum = (item, adjustment) => {
         </tr>
       </tbody>
     </table>
+    <br />
+    <p class="text-center">對品項連點兩下，可以編輯品項名稱</p>
   </main>
 </template>
 
 <style scoped>
-h1 {
+h1,
+p {
   text-align: center;
 }
 
